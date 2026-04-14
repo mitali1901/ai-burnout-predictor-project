@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BurnoutAI — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:     #050810;
+      --s1:     rgba(10,22,48,0.8);
+      --s2:     rgba(15,30,60,0.6);
+      --accent: #4f9cf9;
+      --acc2:   #38bdf8;
+      --green:  #34d399;
+      --amber:  #fbbf24;
+      --red:    #f87171;
+      --purple: #a78bfa;
+      --text:   #e8f0fe;
+      --muted:  #6b7ea8;
+      --border: rgba(79,156,249,0.12);
+      --bdr2:   rgba(255,255,255,0.06);
+      --font:   'Outfit', sans-serif;
+      --mono:   'JetBrains Mono', monospace;
+      --r:      16px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+    body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background:radial-gradient(ellipse 70% 50% at 15% 15%,rgba(15,40,100,.5) 0%,transparent 60%),
+      radial-gradient(ellipse 50% 70% at 85% 85%,rgba(10,25,70,.4) 0%,transparent 60%)}
+    body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+      background-image:linear-gradient(rgba(79,156,249,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(79,156,249,.025) 1px,transparent 1px);background-size:48px 48px}
+    .orb{position:fixed;border-radius:50%;filter:blur(100px);z-index:0;pointer-events:none;animation:orbF 10s ease-in-out infinite}
+    .orb1{width:500px;height:500px;background:rgba(79,156,249,.07);top:-150px;right:-150px}
+    .orb2{width:350px;height:350px;background:rgba(167,139,250,.06);bottom:-100px;left:-100px;animation-delay:-4s}
+    @keyframes orbF{0%,100%{transform:translate(0,0)}50%{transform:translate(15px,-15px)}}
+
+    .app{position:relative;z-index:1;min-height:100vh}
+
+    /* MAIN */
+    .main{padding:32px;overflow-y:auto;max-width:1200px;margin:0 auto}
+    @media(max-width:600px){.main{padding:16px}}
+    .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+    .page-title{font-size:22px;font-weight:800}
+    .page-title span{color:var(--acc2)}
+    .top-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .pill{font-size:11px;font-family:var(--mono);padding:6px 14px;border-radius:20px;
+      border:1px solid var(--border);background:rgba(79,156,249,.08);color:var(--acc2);
+      cursor:pointer;transition:all .2s;white-space:nowrap}
+    .pill:hover{background:rgba(79,156,249,.18);border-color:var(--accent)}
+    .btn-out{font-size:12px;color:var(--muted);background:none;border:1px solid var(--bdr2);
+      border-radius:8px;padding:6px 12px;cursor:pointer;transition:all .2s}
+    .btn-out:hover{color:var(--red);border-color:rgba(248,113,113,.3)}
+
+    /* CARD */
+    .card{background:var(--s1);backdrop-filter:blur(20px);border:1px solid var(--border);
+      border-radius:var(--r);box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.04)}
+    .mb16{margin-bottom:16px}
+
+    /* FORM */
+    .fc{padding:22px}
+    .fh{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding-bottom:14px;border-bottom:1px solid var(--bdr2)}
+    .fh-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}
+    .fhi-b{background:rgba(79,156,249,.15);border:1px solid rgba(79,156,249,.2)}
+    .fhi-g{background:rgba(52,211,153,.15);border:1px solid rgba(52,211,153,.2)}
+    .fh-t{font-size:14px;font-weight:700}
+    .fh-s{font-size:11px;color:var(--muted)}
+
+    .field{margin-bottom:13px}
+    .ft{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+    .fl{font-size:12px;color:var(--muted);font-weight:500}
+    .fv{font-family:var(--mono);font-size:12px;color:var(--acc2);background:rgba(79,156,249,.1);padding:2px 8px;border-radius:6px}
+
+    input[type=range]{width:100%;-webkit-appearance:none;height:4px;background:rgba(255,255,255,.08);border-radius:2px;outline:none}
+    input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;
+      background:linear-gradient(135deg,var(--accent),var(--acc2));cursor:pointer;border:2px solid var(--bg);
+      box-shadow:0 0 8px rgba(79,156,249,.5);transition:transform .15s}
+    input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
+
+    .fr{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    select,input[type=number]{width:100%;padding:10px 12px;background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);border-radius:10px;color:var(--text);
+      font-family:var(--font);font-size:13px;outline:none;transition:all .2s}
+    select:focus,input[type=number]:focus{border-color:rgba(79,156,249,.4);background:rgba(79,156,249,.06);
+      box-shadow:0 0 0 3px rgba(79,156,249,.08)}
+    select option{background:#0d1a2e;color:#000}
+
+    .btn-run{width:100%;padding:14px;background:linear-gradient(135deg,#2563eb,#0ea5e9);border:none;
+      border-radius:12px;cursor:pointer;font-family:var(--font);font-size:15px;font-weight:700;
+      color:#fff;transition:all .25s;margin-top:8px;box-shadow:0 8px 24px rgba(37,99,235,.35);position:relative;overflow:hidden}
+    .btn-run::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.12),transparent)}
+    .btn-run:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(37,99,235,.45)}
+    .btn-run:active{transform:translateY(0)}
+    .btn-run.loading{opacity:.6;pointer-events:none}
+
+    /* RESULTS */
+    .burnout-hero{padding:26px;display:flex;align-items:center;gap:20px}
+    .b-ring{width:100px;height:100px;border-radius:50%;border:3px solid;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:3px;position:relative}
+    .b-ring::before{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid;opacity:.2}
+    .b-emoji{font-size:30px;line-height:1}
+    .b-rl{font-size:8px;letter-spacing:1px;opacity:.7}
+    .b-info h2{font-size:26px;font-weight:800;margin-bottom:4px}
+    .b-info p{font-size:13px;color:var(--muted);line-height:1.5}
+    .b-tag{display:inline-block;font-size:10px;font-family:var(--mono);background:rgba(255,255,255,.06);
+      border:1px solid var(--bdr2);padding:3px 8px;border-radius:6px;color:var(--muted);margin-top:8px}
+
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media(max-width:600px){.grid3{grid-template-columns:1fr 1fr}}
+    .mc{padding:20px;position:relative;overflow:hidden}
+    .mc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 var(--r) var(--r)}
+    .mc-g::after{background:linear-gradient(90deg,var(--green),transparent)}
+    .mc-a::after{background:linear-gradient(90deg,var(--amber),transparent)}
+    .mc-r::after{background:linear-gradient(90deg,var(--red),transparent)}
+    .mc-b::after{background:linear-gradient(90deg,var(--accent),transparent)}
+    .mc-ico{font-size:22px;margin-bottom:8px}
+    .mc-lbl{font-size:10px;color:var(--muted);letter-spacing:.5px;margin-bottom:4px}
+    .mc-val{font-size:28px;font-weight:800;font-family:var(--mono);line-height:1}
+    .mc-sub{font-size:11px;color:var(--muted);margin-top:3px}
+
+    .prob-card{padding:20px}
+    .slbl{font-size:11px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;
+      margin-bottom:14px;display:flex;align-items:center;gap:8px}
+    .slbl::after{content:'';flex:1;height:1px;background:var(--bdr2)}
+    .pr{margin-bottom:14px}
+    .pr:last-child{margin-bottom:0}
+    .pr-top{display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;font-weight:500}
+    .pr-pct{font-family:var(--mono);font-size:12px}
+    .pr-bar{height:8px;background:rgba(255,255,255,.06);border-radius:4px;overflow:hidden}
+    .pr-fill{height:100%;border-radius:4px;transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+    /* SUGGESTIONS */
+    .sugs-card{padding:20px}
+    .si{display:flex;gap:14px;padding:14px 16px;background:rgba(255,255,255,.03);
+      border:1px solid var(--bdr2);border-radius:12px;margin-bottom:10px;
+      transition:all .2s;position:relative;overflow:hidden}
+    .si:last-child{margin-bottom:0}
+    .si:hover{background:rgba(255,255,255,.05);border-color:rgba(79,156,249,.2)}
+    .si::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;border-radius:3px 0 0 3px}
+    .si.p1::before{background:var(--red)}
+    .si.p2::before{background:var(--amber)}
+    .si.p3::before{background:var(--green)}
+    .si-ico{width:42px;height:42px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px}
+    .si.p1 .si-ico{background:rgba(248,113,113,.12)}
+    .si.p2 .si-ico{background:rgba(251,191,36,.12)}
+    .si.p3 .si-ico{background:rgba(52,211,153,.12)}
+    .si-badge{font-size:10px;padding:2px 8px;border-radius:6px;font-weight:700;display:inline-block;margin-bottom:3px}
+    .si.p1 .si-badge{background:rgba(248,113,113,.15);color:var(--red)}
+    .si.p2 .si-badge{background:rgba(251,191,36,.15);color:var(--amber)}
+    .si.p3 .si-badge{background:rgba(52,211,153,.15);color:var(--green)}
+    .si-cat{font-size:10px;letter-spacing:1.5px;color:var(--muted);text-transform:uppercase;margin-bottom:2px}
+    .si-title{font-size:13px;font-weight:700;margin-bottom:3px}
+    .si-detail{font-size:12px;color:var(--muted);line-height:1.5}
+
+    .report-card{padding:20px}
+    .report-pre{font-family:var(--mono);font-size:11px;line-height:1.8;color:var(--muted);
+      white-space:pre-wrap;overflow-x:auto;background:rgba(0,0,0,.3);
+      padding:16px;border-radius:10px;border:1px solid var(--bdr2)}
+
+    .empty-state{text-align:center;padding:80px 20px;color:var(--muted)}
+    .e-icon{font-size:52px;margin-bottom:16px;opacity:.5}
+    .e-text{font-size:14px;line-height:1.7}
+    .e-text span{color:var(--acc2)}
+
+    .fade{animation:fadeUp .5s ease both}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
+      border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    ::-webkit-scrollbar{width:5px}
+    ::-webkit-scrollbar-thumb{background:rgba(79,156,249,.2);border-radius:3px}
+  </style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="app">
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div><div class="page-title">Wellness <span>Dashboard</span></div></div>
+      <div class="top-right">
+        <button class="pill" onclick="loadScenario(0)">🟢 Healthy</button>
+        <button class="pill" onclick="loadScenario(1)">🟡 Moderate</button>
+        <button class="pill" onclick="loadScenario(2)">🔴 Burned Out</button>
+        <button class="btn-out" onclick="logout()">Sign Out</button>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:370px 1fr;gap:20px;align-items:start">
+
+      <!-- LEFT: FORM -->
+      <div>
+        <form id="bForm">
+          <!-- Usage -->
+          <div class="card fc mb16">
+            <div class="fh">
+              <div class="fh-icon fhi-b">📱</div>
+              <div><div class="fh-t">Daily Usage Profile</div><div class="fh-s">Screen & work behaviour</div></div>
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">Screen Time</span><span class="fv" id="stV">6h</span></div>
+              <input type="range" name="screen_time" min="1" max="16" step="0.5" value="6" oninput="document.getElementById('stV').textContent=this.value+'h'">
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">Work / Study Hours</span><span class="fv" id="whV">4h</span></div>
+              <input type="range" name="work_hours" min="1" max="12" step="0.5" value="4" oninput="document.getElementById('whV').textContent=this.value+'h'">
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">Sleep Hours</span><span class="fv" id="slV">7h</span></div>
+              <input type="range" name="sleep_hours" min="3" max="10" step="0.5" value="7" oninput="document.getElementById('slV').textContent=this.value+'h'">
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">Break Frequency</span><span class="fv" id="bfV">3</span></div>
+              <input type="range" name="break_frequency" min="0" max="10" step="1" value="3" oninput="document.getElementById('bfV').textContent=this.value">
+            </div>
+          </div>
+
+          <!-- Typing -->
+          <div class="card fc mb16">
+            <div class="fh">
+              <div class="fh-icon fhi-b">⌨️</div>
+              <div><div class="fh-t">Typing Behaviour</div><div class="fh-s">Cognitive signal analysis</div></div>
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">Typing Speed (WPM)</span><span class="fv" id="tsV">60</span></div>
+              <input type="range" name="typing_speed" min="15" max="120" step="1" value="60" oninput="document.getElementById('tsV').textContent=this.value">
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">Backspace Rate / 100 chars</span><span class="fv" id="brV">8</span></div>
+              <input type="range" name="backspace_rate" min="0" max="30" step="0.5" value="8" oninput="document.getElementById('brV').textContent=this.value">
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">Long Pauses / min</span><span class="fv" id="pfV">5</span></div>
+              <input type="range" name="pause_frequency" min="0" max="20" step="0.5" value="5" oninput="document.getElementById('pfV').textContent=this.value">
+            </div>
+            <div class="field">
+              <div class="ft"><span class="fl">App Switches / hr</span><span class="fv" id="asV">15</span></div>
+              <input type="range" name="app_switch_rate" min="0" max="60" step="1" value="15" oninput="document.getElementById('asV').textContent=this.value">
+            </div>
+          </div>
+
+          <!-- Lifestyle -->
+          <div class="card fc mb16">
+            <div class="fh">
+              <div class="fh-icon fhi-g">🌿</div>
+              <div><div class="fh-t">Lifestyle Signals</div><div class="fh-s">Wellness & physical health</div></div>
+            </div>
+            <div class="fr mb16">
+              <div class="field">
+                <div class="ft"><span class="fl">App Usage</span></div>
+                <select name="usage_type">
+                  <option value="0">📚 Study</option>
+                  <option value="2" selected>🔀 Mixed</option>
+                  <option value="1">📱 Social Media</option>
+                </select>
+              </div>
+              <div class="field">
+                <div class="ft"><span class="fl">Focus Sessions</span></div>
+                <input type="number" name="focus_sessions" min="0" max="10" value="3">
+              </div>
+            </div>
+            <div class="fr">
+              <div class="field">
+                <div class="ft"><span class="fl">Hydration (1–5)</span></div>
+                <input type="number" name="hydration" min="1" max="5" value="3">
+              </div>
+              <div class="field">
+                <div class="ft"><span class="fl">Exercise (min)</span></div>
+                <input type="number" name="physical_activity" min="0" max="180" value="30">
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-run" id="runBtn">▶ &nbsp;Analyze My Wellness</button>
+        </form>
+      </div>
+
+      <!-- RIGHT: RESULTS -->
+      <div>
+        <div class="card empty-state" id="emptyBox">
+          <div class="e-icon">🧬</div>
+          <div class="e-text">Fill in your daily parameters<br>and click <span>Analyze My Wellness</span><br>to get your personalised AI report</div>
+        </div>
+
+        <div id="resPanel" style="display:none">
+
+          <!-- Burnout hero -->
+          <div class="card burnout-hero mb16 fade">
+            <div><div class="b-ring" id="bRing">
+              <div class="b-emoji" id="bEmj">—</div>
+              <div class="b-rl">BURNOUT</div>
+            </div></div>
+            <div class="b-info">
+              <h2 id="bLbl">—</h2>
+              <p id="bDsc">—</p>
+              <div class="b-tag" id="bTag">—</div>
+            </div>
+          </div>
+
+          <!-- Metric grid -->
+          <div class="grid3 mb16 fade">
+            <div class="card mc" id="cogCard">
+              <div class="mc-ico">🧠</div>
+              <div class="mc-lbl">COGNITIVE LOAD</div>
+              <div class="mc-val" id="cogV">—</div>
+              <div class="mc-sub">out of 100</div>
+            </div>
+            <div class="card mc mc-b">
+              <div class="mc-ico">⚡</div>
+              <div class="mc-lbl">PRODUCTIVITY</div>
+              <div class="mc-val" id="prodV">—</div>
+              <div class="mc-sub">out of 100</div>
+            </div>
+            <div class="card mc" id="distCard">
+              <div class="mc-ico">🎯</div>
+              <div class="mc-lbl">DISTRACTION</div>
+              <div class="mc-val" id="distV">—</div>
+              <div class="mc-sub">Index score</div>
+            </div>
+          </div>
+
+          <!-- Probability -->
+          <div class="card prob-card mb16 fade">
+            <div class="slbl">Burnout Probability</div>
+            <div class="pr">
+              <div class="pr-top"><span>🟢 Low Risk</span><span class="pr-pct" id="pLow">0%</span></div>
+              <div class="pr-bar"><div class="pr-fill" id="bLow" style="width:0%;background:linear-gradient(90deg,var(--green),rgba(52,211,153,.5))"></div></div>
+            </div>
+            <div class="pr">
+              <div class="pr-top"><span>🟡 Medium Risk</span><span class="pr-pct" id="pMed">0%</span></div>
+              <div class="pr-bar"><div class="pr-fill" id="bMed" style="width:0%;background:linear-gradient(90deg,var(--amber),rgba(251,191,36,.5))"></div></div>
+            </div>
+            <div class="pr">
+              <div class="pr-top"><span>🔴 High Risk</span><span class="pr-pct" id="pHigh">0%</span></div>
+              <div class="pr-bar"><div class="pr-fill" id="bHigh" style="width:0%;background:linear-gradient(90deg,var(--red),rgba(248,113,113,.5))"></div></div>
+            </div>
+          </div>
+
+          <!-- Suggestions -->
+          <div class="slbl mb16">Smart Recommendations</div>
+          <div class="card sugs-card mb16 fade" id="sugsBox"></div>
+
+          <!-- Report -->
+          <div class="slbl mb16">AI Daily Report</div>
+          <div class="card report-card fade">
+            <pre class="report-pre" id="repPre">—</pre>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Auth
+const u = JSON.parse(sessionStorage.getItem('burnout_user') || '{"name":"Demo User","email":"demo@burnoutai.com"}');
+function logout(){ sessionStorage.removeItem('burnout_user'); window.location.href='/login'; }
+
+// Scenarios
+let scenes=[];
+fetch('/api/sample-data').then(r=>r.json()).then(d=>{ scenes=d; });
+function loadScenario(i){
+  if(!scenes[i]) return;
+  const d=scenes[i].data;
+  ss('screen_time',d.screen_time,'stV','h');ss('work_hours',d.work_hours,'whV','h');
+  ss('sleep_hours',d.sleep_hours,'slV','h');ss('break_frequency',d.break_frequency,'bfV','');
+  ss('typing_speed',d.typing_speed,'tsV','');ss('backspace_rate',d.backspace_rate,'brV','');
+  ss('pause_frequency',d.pause_frequency,'pfV','');ss('app_switch_rate',d.app_switch_rate,'asV','');
+  const f=document.getElementById('bForm');
+  f.usage_type.value=d.usage_type;f.focus_sessions.value=d.focus_sessions;
+  f.hydration.value=d.hydration;f.physical_activity.value=d.physical_activity;
+}
+function ss(name,val,id,sfx){
+  const el=document.querySelector(`[name="${name}"]`);
+  if(el){el.value=val;document.getElementById(id).textContent=val+sfx;}
+}
+
+// Submit
+document.getElementById('bForm').addEventListener('submit',async e=>{
+  e.preventDefault();
+  const btn=document.getElementById('runBtn');
+  btn.classList.add('loading');btn.innerHTML='<span class="spinner"></span>  Analyzing…';
+  try{
+    const res=await fetch('/predict',{method:'POST',body:new FormData(e.target)});
+    const d=await res.json();
+    if(d.status!=='success') throw new Error(d.message);
+    render(d);
+  }catch(err){alert('Error: '+err.message);}
+  finally{btn.classList.remove('loading');btn.innerHTML='▶ &nbsp;Analyze My Wellness';}
+});
+
+function render(data){
+  const p=data.prediction, sugs=data.suggestions;
+  document.getElementById('emptyBox').style.display='none';
+  document.getElementById('resPanel').style.display='block';
+
+  const cm={Low:'var(--green)',Medium:'var(--amber)',High:'var(--red)'};
+  const em={Low:'😌',Medium:'😓',High:'😫'};
+  const dm={Low:'Your digital habits are in a healthy range. Keep it up!',
+            Medium:'Signs of burnout are accumulating. Take proactive steps now.',
+            High:'Critical burnout detected. Immediate recovery action needed.'};
+  const col=cm[p.burnout_level]||'var(--accent)';
+  const ring=document.getElementById('bRing');
+  ring.style.borderColor=col; ring.style.color=col;
+  document.getElementById('bEmj').textContent=em[p.burnout_level];
+  document.getElementById('bLbl').textContent=p.burnout_level+' Burnout';
+  document.getElementById('bLbl').style.color=col;
+  document.getElementById('bDsc').textContent=dm[p.burnout_level];
+  document.getElementById('bTag').textContent=`Model Accuracy: ${(p.model_accuracy*100).toFixed(1)}%  ·  ${data.timestamp}`;
+
+  const cog=p.cognitive_load;
+  document.getElementById('cogCard').className='card mc '+(cog>65?'mc-r':cog>35?'mc-a':'mc-g');
+  document.getElementById('cogV').textContent=cog.toFixed(0);
+  document.getElementById('prodV').textContent=p.productivity.toFixed(0);
+  const dist=p.distraction_index;
+  document.getElementById('distCard').className='card mc '+(dist>60?'mc-r':dist>30?'mc-a':'mc-g');
+  document.getElementById('distV').textContent=dist.toFixed(0);
+
+  const pr=p.probabilities;
+  ab('bLow','pLow',pr['Low']||0);ab('bMed','pMed',pr['Medium']||0);ab('bHigh','pHigh',pr['High']||0);
+
+  const sb=document.getElementById('sugsBox');
+  sb.innerHTML='';
+  sugs.forEach(s=>{
+    const bl=s.priority===1?'🚨 Critical':s.priority===2?'⚠️ Important':'✅ Tip';
+    sb.innerHTML+=`<div class="si p${s.priority}">
+      <div class="si-ico">${s.icon}</div>
+      <div style="flex:1">
+        <div class="si-badge">${bl}</div>
+        <div class="si-cat">${s.category}</div>
+        <div class="si-title">${s.title}</div>
+        <div class="si-detail">${s.detail}</div>
+      </div></div>`;
+  });
+
+  document.getElementById('repPre').textContent=data.report;
+  document.getElementById('resPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+function ab(bId,lId,v){
+  const b=document.getElementById(bId),l=document.getElementById(lId);
+  l.textContent=v.toFixed(1)+'%'; b.style.width='0%';
+  requestAnimationFrame(()=>{ b.style.width=v+'%'; });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BurnoutAI — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg:        #050810;
+      --blue1:     #0a1628;
+      --blue2:     #0d1f3c;
+      --accent:    #4f9cf9;
+      --accent2:   #38bdf8;
+      --glow:      rgba(79,156,249,0.35);
+      --glass:     rgba(255,255,255,0.04);
+      --glass-b:   rgba(255,255,255,0.08);
+      --text:      #e8f0fe;
+      --muted:     #6b7ea8;
+      --success:   #34d399;
+      --error:     #f87171;
+      --font:      'Outfit', sans-serif;
+      --mono:      'JetBrains Mono', monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      overflow-y: auto;
+      padding-top: 40px;
+      position: relative;
+    }
+    /* ── Animated background ── */
+    .bg-canvas {
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 20%, rgba(15,40,100,0.6) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 80% 80%, rgba(10,30,80,0.5) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(79,156,249,0.06) 0%, transparent 70%),
+        var(--bg);
+    }
+
+    /* Floating orbs */
+    .orb {
+      position: fixed; border-radius: 50%; filter: blur(80px);
+      animation: orbFloat 8s ease-in-out infinite;
+      z-index: 0; pointer-events: none;
+    }
+    .orb1 { width: 400px; height: 400px; background: rgba(79,156,249,0.12); top: -100px; left: -100px; animation-delay: 0s; }
+    .orb2 { width: 300px; height: 300px; background: rgba(56,189,248,0.08); bottom: -80px; right: -80px; animation-delay: -3s; }
+    .orb3 { width: 200px; height: 200px; background: rgba(99,102,241,0.1); top: 50%; left: 60%; animation-delay: -5s; }
+
+    @keyframes orbFloat {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      33%       { transform: translate(20px,-20px) scale(1.05); }
+      66%       { transform: translate(-15px,15px) scale(0.95); }
+    }
+
+    /* Grid overlay */
+    .bg-canvas::after {
+      content: '';
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(79,156,249,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,156,249,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+
+    /* ── Main container ── */
+    .login-wrap {
+      position: relative; z-index: 10;
+      width: 100%; max-width: 440px;
+      padding: 20px;
+      animation: pageIn 0.8s cubic-bezier(.4,0,.2,1) both;
+    }
+    @keyframes pageIn {
+      from { opacity: 0; transform: translateY(30px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    /* ── Logo ── */
+    .logo-block {
+      text-align: center; margin-bottom: 36px;
+      animation: pageIn 0.8s 0.1s both;
+    }
+    .logo-icon {
+      width: 64px; height: 64px; margin: 0 auto 14px;
+      background: linear-gradient(135deg, rgba(79,156,249,0.2), rgba(56,189,248,0.1));
+      border: 1px solid rgba(79,156,249,0.3);
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      box-shadow: 0 0 40px rgba(79,156,249,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
+      position: relative;
+    }
+    .logo-icon::after {
+      content: '';
+      position: absolute; inset: -1px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, rgba(79,156,249,0.4), transparent 50%);
+      z-index: -1;
+    }
+    .logo-title {
+      font-size: 28px; font-weight: 800; letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #fff 30%, var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .logo-sub {
+      font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 400;
+    }
+
+    /* ── Glass card ── */
+    .glass-card {
+      background: rgba(10,22,48,0.7);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(79,156,249,0.15);
+      border-radius: 24px;
+      padding: 36px 32px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.03) inset,
+        0 32px 64px rgba(0,0,0,0.4),
+        0 0 80px rgba(79,156,249,0.05);
+      animation: pageIn 0.8s 0.15s both;
+    }
+
+    .card-title {
+      font-size: 20px; font-weight: 700; margin-bottom: 4px;
+    }
+    .card-sub {
+      font-size: 13px; color: var(--muted); margin-bottom: 28px;
+    }
+
+    /* ── Tabs ── */
+    .tabs {
+      display: flex; background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px; padding: 4px;
+      margin-bottom: 24px;
+    }
+    .tab {
+      flex: 1; padding: 9px; text-align: center;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      border-radius: 9px; transition: all 0.25s; color: var(--muted);
+      border: none; background: none;
+    }
+    .tab.active {
+      background: linear-gradient(135deg, rgba(79,156,249,0.25), rgba(56,189,248,0.15));
+      color: var(--accent2);
+      border: 1px solid rgba(79,156,249,0.25);
+      box-shadow: 0 4px 16px rgba(79,156,249,0.15);
+    }
+
+    /* ── Form ── */
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block; font-size: 12px; font-weight: 600;
+      color: var(--muted); margin-bottom: 7px; letter-spacing: 0.3px;
+    }
+    .input-wrap { position: relative; }
+    .input-icon {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      font-size: 16px; pointer-events: none;
+    }
+    .field input {
+      width: 100%; padding: 13px 14px 13px 42px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px; color: var(--text);
+      font-family: var(--font); font-size: 14px;
+      outline: none; transition: all 0.25s;
+    }
+    .field input:focus {
+      border-color: rgba(79,156,249,0.5);
+      background: rgba(79,156,249,0.06);
+      box-shadow: 0 0 0 3px rgba(79,156,249,0.1);
+    }
+    .field input::placeholder { color: rgba(107,126,168,0.6); }
+
+    /* ── Submit button ── */
+    .btn-login {
+      width: 100%; padding: 14px;
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+      border: none; border-radius: 12px; cursor: pointer;
+      font-family: var(--font); font-size: 15px; font-weight: 700;
+      color: #fff; letter-spacing: 0.3px;
+      transition: all 0.25s; position: relative; overflow: hidden;
+      box-shadow: 0 8px 32px rgba(37,99,235,0.4);
+    }
+    .btn-login::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.15), transparent);
+      border-radius: 12px;
+    }
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(37,99,235,0.5);
+    }
+    .btn-login:active { transform: translateY(0); }
+
+    /* ── Stats strip ── */
+    .stats-strip {
+      display: flex; gap: 0; margin-top: 28px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 14px; overflow: hidden;
+      animation: pageIn 0.8s 0.3s both;
+    }
+    .stat {
+      flex: 1; padding: 14px 10px; text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-val {
+      font-size: 18px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .stat-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+    /* ── Error/success messages ── */
+    .msg {
+      padding: 10px 14px; border-radius: 10px;
+      font-size: 13px; margin-bottom: 14px; display: none;
+    }
+    .msg.error   { background: rgba(248,113,113,0.12); border: 1px solid rgba(248,113,113,0.25); color: var(--error); }
+    .msg.success { background: rgba(52,211,153,0.12); border: 1px solid rgba(52,211,153,0.25); color: var(--success); }
+    .msg.show { display: block; animation: fadeUp 0.3s ease; }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(6px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* Pulse ring on logo */
+    @keyframes pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(79,156,249,0.4); }
+      70%  { box-shadow: 0 0 0 16px rgba(79,156,249,0); }
+      100% { box-shadow: 0 0 0 0 rgba(79,156,249,0); }
+    }
+    .logo-icon { animation: pulse 3s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+
+<div class="bg-canvas"></div>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="orb orb3"></div>
+
+<div class="login-wrap">
+
+  <!-- Logo -->
+  <div class="logo-block">
+    <div class="logo-icon">🧠</div>
+    <div class="logo-title">BurnoutAI</div>
+    <div class="logo-sub">Digital Wellness Intelligence System</div>
+  </div>
+
+  <!-- Card -->
+  <div class="glass-card">
+    <div class="card-title">Welcome back</div>
+    <div class="card-sub">Sign in to access your wellness dashboard</div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="tab" onclick="switchTab('register')">Create Account</button>
+    </div>
+
+    <!-- Message -->
+    <div class="msg error" id="errMsg"></div>
+    <div class="msg success" id="okMsg"></div>
+
+    <!-- Login Form -->
+    <div id="loginForm">
+      <div class="field">
+        <label>EMAIL ADDRESS</label>
+        <div class="input-wrap">
+          <span class="input-icon">📧</span>
+          <input type="email" id="loginEmail" placeholder="you@example.com" autocomplete="email">
+        </div>
+      </div>
+      <div class="field">
+        <label>PASSWORD</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="loginPass" placeholder="Enter your password" autocomplete="current-password">
+        </div>
+      </div>
+      <button type="button" class="btn-login" id="loginBtn" onclick="handleLogin()">Sign In →</button>
+    </div>
+
+    <!-- Register Form -->
+    <div id="registerForm" style="display:none">
+      <div class="field">
+        <label>FULL NAME</label>
+        <div class="input-wrap">
+          <span class="input-icon">👤</span>
+          <input type="text" id="regName" placeholder="Your full name">
+        </div>
+      </div>
+      <div class="field">
+        <label>EMAIL ADDRESS</label>
+        <div class="input-wrap">
+          <span class="input-icon">📧</span>
+          <input type="email" id="regEmail" placeholder="you@example.com">
+        </div>
+      </div>
+      <div class="field">
+        <label>PASSWORD</label>
+        <div class="input-wrap">
+          <span class="input-icon">🔒</span>
+          <input type="password" id="regPass" placeholder="Min. 8 characters">
+        </div>
+      </div>
+      <button type="button" class="btn-login" id="regBtn" onclick="handleRegister()">Create Account →</button>
+    </div>
+  </div>
+
+  <!-- Stats strip -->
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-val">90.5%</div>
+      <div class="stat-label">Model Accuracy</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">12+</div>
+      <div class="stat-label">Health Signals</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">Real-time</div>
+      <div class="stat-label">AI Analysis</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  /*
+   * AUTH LOGIC
+   * Users are stored in localStorage as:
+   *   burnout_users = { "email": { name, email, password } }
+   * Session is stored in sessionStorage as:
+   *   burnout_user = { name, email }
+   *
+   * Only registered users can log in.
+   * An unregistered email will be rejected with a clear error.
+   */
+
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('burnout_users') || '{}');
+  }
+  function saveUsers(users) {
+    localStorage.setItem('burnout_users', JSON.stringify(users));
+  }
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      t.classList.toggle('active', (tab === 'login' && i === 0) || (tab === 'register' && i === 1));
+    });
+    document.getElementById('loginForm').style.display    = tab === 'login'    ? 'block' : 'none';
+    document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+    hideMsg();
+  }
+
+  function showErr(msg) {
+    const el = document.getElementById('errMsg');
+    el.textContent = '⚠ ' + msg;
+    el.className = 'msg error show';
+    document.getElementById('okMsg').className = 'msg success';
+  }
+  function showOk(msg) {
+    const el = document.getElementById('okMsg');
+    el.textContent = '✓ ' + msg;
+    el.className = 'msg success show';
+    document.getElementById('errMsg').className = 'msg error';
+  }
+  function hideMsg() {
+    document.getElementById('errMsg').className = 'msg error';
+    document.getElementById('okMsg').className  = 'msg success';
+  }
+
+  function handleLogin() {
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('loginPass').value;
+
+    if (!email || !pass) { showErr('Please fill in all fields.'); return; }
+
+    const users = getUsers();
+
+    // Check if email is registered
+    if (!users[email]) {
+      showErr('No account found with this email. Please create an account first.');
+      return;
+    }
+
+    // Check password
+    if (users[email].password !== pass) {
+      showErr('Incorrect password. Please try again.');
+      return;
+    }
+
+    // Success
+    sessionStorage.setItem('burnout_user', JSON.stringify({ name: users[email].name, email }));
+    showOk('Welcome back, ' + users[email].name + '! Loading dashboard…');
+    setTimeout(() => window.location.href = '/dashboard', 1200);
+  }
+
+  function handleRegister() {
+    const name  = document.getElementById('regName').value.trim();
+    const email = document.getElementById('regEmail').value.trim().toLowerCase();
+    const pass  = document.getElementById('regPass').value;
+
+    if (!name || !email || !pass) { showErr('Please fill in all fields.'); return; }
+    if (pass.length < 8) { showErr('Password must be at least 8 characters.'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Please enter a valid email address.'); return; }
+
+    const users = getUsers();
+
+    // Check if already registered
+    if (users[email]) {
+      showErr('An account with this email already exists. Please sign in.');
+      return;
+    }
+
+    // Register
+    users[email] = { name, email, password: pass };
+    saveUsers(users);
+
+    sessionStorage.setItem('burnout_user', JSON.stringify({ name, email }));
+    showOk('Account created successfully! Redirecting to dashboard…');
+    setTimeout(() => window.location.href = '/dashboard', 1200);
+  }
+
+  // Enter key support
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const loginVisible = document.getElementById('loginForm').style.display !== 'none';
+    loginVisible ? handleLogin() : handleRegister();
+  });
+</script>
+
+</body>
+</html>

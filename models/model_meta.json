@@ -1,0 +1,38 @@
+{
+  "model_name": "Logistic Regression",
+  "test_accuracy": 0.905,
+  "cv_scores": {
+    "Logistic Regression": 0.9125,
+    "Decision Tree": 0.8331,
+    "Random Forest": 0.88,
+    "Gradient Boosting": 0.8844
+  },
+  "feature_cols": [
+    "screen_time_hours",
+    "work_hours",
+    "sleep_hours",
+    "break_frequency",
+    "typing_speed_wpm",
+    "backspace_rate",
+    "pause_frequency",
+    "app_switch_rate",
+    "usage_type",
+    "focus_session_count",
+    "hydration_level",
+    "physical_activity",
+    "work_to_break_ratio",
+    "sleep_deficit",
+    "distraction_index",
+    "typing_efficiency"
+  ],
+  "label_map": {
+    "0": "Low",
+    "1": "Medium",
+    "2": "High"
+  },
+  "label_colors": {
+    "0": "#22c55e",
+    "1": "#f59e0b",
+    "2": "#ef4444"
+  }
+}
