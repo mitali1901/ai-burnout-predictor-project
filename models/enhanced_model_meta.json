@@ -1,0 +1,113 @@
+{
+  "model_name": "Logistic Regression",
+  "test_accuracy": 1.0,
+  "feature_cols": [
+    "screen_time_hours",
+    "work_hours",
+    "sleep_hours",
+    "break_frequency",
+    "typing_speed_wpm",
+    "backspace_rate",
+    "pause_frequency",
+    "app_switch_rate",
+    "usage_type",
+    "focus_session_count",
+    "hydration_level",
+    "physical_activity",
+    "sleep_quality",
+    "stress_level",
+    "work_life_balance",
+    "anxiety_level",
+    "motivation_level",
+    "peak_activity_hour",
+    "late_night_activity",
+    "social_screen_time",
+    "work_screen_time",
+    "detox_days_per_week",
+    "screen_free_hours",
+    "weekend_screen_increase",
+    "weekend_work_decrease",
+    "work_intensity",
+    "screen_efficiency",
+    "sleep_deficit",
+    "sleep_quality_ratio",
+    "sleep_debt",
+    "typing_efficiency",
+    "cognitive_strain",
+    "focus_productivity",
+    "digital_balance",
+    "work_life_ratio",
+    "wellness_score",
+    "mental_health_index",
+    "stress_burnout_risk",
+    "night_owl_score",
+    "early_bird_score",
+    "social_work_ratio",
+    "productivity_score",
+    "recovery_score",
+    "social_work_balance",
+    "circadian_risk",
+    "burnout_risk_composite",
+    "stress_x_screen",
+    "sleep_x_work",
+    "activity_x_focus"
+  ],
+  "feature_importance": {},
+  "label_map": {
+    "0": "Low",
+    "1": "Medium",
+    "2": "High"
+  },
+  "label_colors": {
+    "0": "#22c55e",
+    "1": "#f59e0b",
+    "2": "#ef4444"
+  },
+  "all_model_results": {
+    "Logistic Regression": {
+      "test_accuracy": 1.0,
+      "f1": 1.0,
+      "auc": 1.0
+    },
+    "Random Forest": {
+      "test_accuracy": 1.0,
+      "f1": 1.0,
+      "auc": 1.0
+    },
+    "Gradient Boosting": {
+      "test_accuracy": 1.0,
+      "f1": 1.0,
+      "auc": 1.0
+    },
+    "XGBoost": {
+      "test_accuracy": 1.0,
+      "f1": 1.0,
+      "auc": 1.0
+    },
+    "LightGBM": {
+      "test_accuracy": 1.0,
+      "f1": 1.0,
+      "auc": 1.0
+    },
+    "SVM": {
+      "test_accuracy": 1.0,
+      "f1": 1.0,
+      "auc": 1.0
+    },
+    "KNN": {
+      "test_accuracy": 0.999,
+      "f1": 0.999,
+      "auc": 1.0
+    },
+    "AdaBoost": {
+      "test_accuracy": 1.0,
+      "f1": 1.0,
+      "auc": 1.0
+    }
+  },
+  "dataset_info": {
+    "samples": 4998,
+    "features": 49,
+    "classes": 3
+  }
+}
